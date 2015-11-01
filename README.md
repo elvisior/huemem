@@ -4,7 +4,7 @@ Make sure you've used hue_bashlibrary before.. (specifically you need to have li
 
 huemem.sh tries to remember the state the lights were in so that next time you turn them on it will return them to that state...
 
-Only tested under cygwin but it should work on linux fine as well... doesn't work in GoW (because it didn't like my Strawberry version of Perl).
+Only tested under cygwin but it should work on linux fine as well... doesn't work in GoW (because it didn't like my Strawberry version of Perl).  Your hue base needs to have a static ip address or you'll be updating the ip address all the time.  So set a static dhcp reservation on your wireless router/hub.
 
 In order to be able to work it needs to always be running (and thus leaving your computer on)... so you can either leave a cygwin terminal window open all the time or install it as a service.
 
