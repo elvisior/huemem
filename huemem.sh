@@ -1,8 +1,12 @@
 #!/bin/bash
+# released under GNU GENERAL PUBLIC LICENSE v2, see LICENSE
 
 # try and remember the state of the hue lights .. and then restore it next time you turn then on via the power switch
 # only tested in cygwin 
 # GoW doesn't include perl...  and the Strawberry free perl for windows doesn't like the syntax used...
+
+#uncomment if you need logging while running the service
+#exec > /tmp/huemem.log
 
 # import my hue bash library
 source hue_bashlibrary.sh
@@ -17,8 +21,7 @@ ip='192.168.1.27'						# IP of hue bridge
 devicetype='raspberry'						# Link with bridge: type of device
 username='huelibrary'						# Link with bridge: username / app name
 loglevel=0							# 0 all logging off, # 1 gossip, # 2 verbose, # 3 errors
-
-delay=1
+delay=2
 
 #work out how many lights there are
 LIGHTS=`curl -s -H "Content-Type: application/json" "http://$ip/api/$username/lights/" | tr "{" "\n" | grep modelid | wc -l`
