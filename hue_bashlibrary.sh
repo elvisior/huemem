@@ -149,6 +149,26 @@ function hue_is_on() {
 	fi
 }
 
+# Does not use one of the helpers - due to the need to parse the result
+# Function hue_is_reachable: return 0, if light is not reachable, return 1 if light is reachable (ie.. the power switch is on)
+# $1 = light
+
+# Example: hue_is_reachable 3
+
+function hue_is_reachable() {
+	log 1 "curl -s -H \"Content-Type: application/json\" \"http://$ip/api/$username/lights/$1\""
+	output=$(curl -s -H "Content-Type: application/json" "http://$ip/api/$username/lights/$1")
+	log_error "$output"
+
+	if [[ "$output" == *\"reachable\":true* ]]
+	then
+		result_hue_is_reachable=1
+	else
+		result_hue_is_reachable=0
+	fi
+	echo $result_hue_is_reachable
+}
+
 
 # Does not use one of the helpers - due to the need to parse the result
 # Function hue_get_bri: return brightness level of the light
@@ -162,6 +182,48 @@ function hue_get_brightness() {
 	log_error "$output"
 
 	result_hue_get_brightness=`echo ${output} | perl -n -e'/\"bri\":(\d+),/ && print $1'`
+}
+
+# Does not use one of the helpers - due to the need to parse the result
+# Function hue_get_sat: return saturation level of the light
+# $1 = light
+
+# Example: hue_get_saturation 3
+
+function hue_get_saturation() {
+	log 1 "curl -s -H \"Content-Type: application/json\" \"http://$ip/api/$username/lights/$1\""
+	output=$(curl -s -H "Content-Type: application/json" "http://$ip/api/$username/lights/$1")
+	log_error "$output"
+
+	result_hue_get_saturation=`echo ${output} | perl -n -e'/\"sat\":(\d+),/ && print $1'`
+}
+
+# Does not use one of the helpers - due to the need to parse the result
+# Function hue_get_ct: return colour temperature level of the light
+# $1 = light
+
+# Example: hue_get_ct 3
+
+function hue_get_ct() {
+	log 1 "curl -s -H \"Content-Type: application/json\" \"http://$ip/api/$username/lights/$1\""
+	output=$(curl -s -H "Content-Type: application/json" "http://$ip/api/$username/lights/$1")
+	log_error "$output"
+
+	result_hue_get_ct=`echo ${output} | perl -n -e'/\"ct\":(\d+),/ && print $1'`
+}
+
+# Does not use one of the helpers - due to the need to parse the result
+# Function hue_get_hue: return hue level of the light
+# $1 = light
+
+# Example: hue_get_hue 3
+
+function hue_get_hue() {
+	log 1 "curl -s -H \"Content-Type: application/json\" \"http://$ip/api/$username/lights/$1\""
+	output=$(curl -s -H "Content-Type: application/json" "http://$ip/api/$username/lights/$1")
+	log_error "$output"
+
+	result_hue_get_hue=`echo ${output} | perl -n -e'/\"hue\":(\d+),/ && print $1'`
 }
 
 
