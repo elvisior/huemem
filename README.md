@@ -1,4 +1,4 @@
-Thanks to the aweseome hueh_bashlibrary ... https://github.com/markusproske/hue_bashlibrary
+Thanks to the aweseome hue_bashlibrary ... https://github.com/markusproske/hue_bashlibrary
 
 Make sure you've used hue_bashlibrary before.. (specifically you need to have linked it where you push the button on the base, etc...)
 
