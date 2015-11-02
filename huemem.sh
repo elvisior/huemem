@@ -1,5 +1,10 @@
 #!/bin/bash
-# released under GNU GENERAL PUBLIC LICENSE v2, see LICENSE
+
+if [ ! -d hue_state ]
+then
+	mkdir hue_state
+fi
+
 
 # try and remember the state of the hue lights .. and then restore it next time you turn then on via the power switch
 # only tested in cygwin 
@@ -29,18 +34,30 @@ echo LIGHTS=$LIGHTS
 lights=`seq 1 $LIGHTS`
 echo lights=$lights
 
+#restore saved state from last time this ran (powerloss, etc...)
+for j in hue_state/*
+do
+	LINE=`cat $j`
+	echo $j $LINE
+	i=`echo $LINE | awk '{ print $1 }'`
+	bri=`echo $LINE | awk '{ print $2 }'`
+	sat=`echo $LINE | awk '{ print $3 }'`
+	hue=`echo $LINE | awk '{ print $4 }'`
+	hue_on_hue_sat_brightness $hue $sat $bri $i
+done
+
 while true
 do
 	echo start of loop
 	for i in $lights
 	do
-		echo i=$i
+		#echo i=$i
 		REACHABLE=$(hue_is_reachable $i)
-		echo REACHABLE=$REACHABLE
+		#echo REACHABLE=$REACHABLE
 		#if the light has been given power or had power taken away
 		if [ "${LASTSTATE[$i]}" != "$REACHABLE" ]
 		then
-			echo STATE CHANGED
+			echo STATE CHANGED $i
 			if [ "$REACHABLE" -eq "1" ]
 			then
 				if [ "${hue[$i]}" != "" ]
@@ -58,14 +75,28 @@ do
 			hue_get_saturation $i
 			hue_get_hue $i
 			#hue_get_ct $i
-			bri[$i]=$result_hue_get_brightness
-			sat[$i]=$result_hue_get_saturation
-			hue[$i]=$result_hue_get_hue
-			#ct[$i]=$result_hue_get_ct
-			echo bri $i ${bri[$i]}
-			echo sat $i ${sat[$i]}
-			echo hue $i ${hue[$i]}
-			#echo ct $i ${ct[$i]}
+			IGNORE=0
+			if [ "$result_hue_get_brightness" = "254" ]
+			then
+				if [ "$result_hue_get_saturation" = "144" ]
+				then
+					if [ "$result_hue_get_hue" = "14910" ]
+					then
+						hue_on_hue_sat_brightness ${hue[$i]} ${sat[$i]} ${bri[$i]} $i
+						IGNORE=1
+					fi
+				fi
+			fi
+			if [ "$IGNORE" = "0" ]
+			then
+				bri[$i]=$result_hue_get_brightness
+				sat[$i]=$result_hue_get_saturation
+				hue[$i]=$result_hue_get_hue
+				#ct[$i]=$result_hue_get_ct
+				echo bri/sat/hue $i ${bri[$i]} ${sat[$i]} ${hue[$i]}
+				/bin/echo -n $i ${bri[$i]} ${sat[$i]} ${hue[$i]} > hue_state/$i
+				#echo ct $i ${ct[$i]}
+			fi
 		fi
 	done
 	echo sleeping
